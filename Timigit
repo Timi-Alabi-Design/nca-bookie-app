@@ -1,0 +1,9 @@
+Host *
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_ed25519
+# GitHub for Timi-Alabi-Design
+Host github-timi
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_timi_alabi
+
