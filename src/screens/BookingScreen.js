@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import auth from '../services/authService';
 
 function BookingScreen({ route, navigation }) {
         const { room } = route.params;
@@ -8,12 +9,19 @@ function BookingScreen({ route, navigation }) {
         const [showPicker, setShowPicker] = useState(false);
         const [timeSlot, setTimeSlot] = useState('');
         const [purpose, setPurpose] = useState('');
+        const [token, setToken] = useState('');
 
-        const token = ''; // TODO: Replace with real token from AsyncStorage or context
+        useEffect(() => {
+                const loadToken = async () => {
+                        const storedToken = await auth.getToken();
+                        setToken(storedToken || '');
+                };
+                loadToken();
+        }, []);
 
         const handleBooking = async () => {
                 try {
-                        const res = await fetch('http://localhost:9000/api/bookings', {
+                        const res = await fetch('http://192.168.1.166/api/bookings', {
                                 method: 'POST',
                                 headers: {
                                         'Content-Type': 'application/json',
@@ -21,7 +29,7 @@ function BookingScreen({ route, navigation }) {
                                 },
                                 body: JSON.stringify({
                                         roomId: room._id,
-                                        date: date.toISOString().split('T')[0], // e.g. "2025-04-30"
+                                        date: date.toISOString().split('T')[0],
                                         timeSlot,
                                         purpose,
                                 }),
@@ -80,4 +88,4 @@ function BookingScreen({ route, navigation }) {
         );
 }
 
-export default BookingScreen
+export default BookingScreen;

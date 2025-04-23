@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { getRooms } from '../utils/api';
+import { getRooms } from '../services/roomService';
+import auth from '../services/authService';
 
-export default function RoomsScreen({ navigation }) {
+function RoomsScreen({ navigation }) {
         const [rooms, setRooms] = useState([]);
         const [loading, setLoading] = useState(true);
-        const token = ''; // TODO: Replace with real token (AsyncStorage or context)
 
         useEffect(() => {
                 const fetchRooms = async () => {
                         try {
+                                const token = await auth.getToken();
                                 const data = await getRooms(token);
                                 setRooms(data);
                         } catch (err) {
@@ -28,7 +29,7 @@ export default function RoomsScreen({ navigation }) {
                                 padding: 16,
                                 marginVertical: 8,
                                 backgroundColor: '#eee',
-                                borderRadius: 8
+                                borderRadius: 8,
                         }}
                 >
                         <Text style={{ fontSize: 18 }}>{item.name}</Text>
@@ -42,12 +43,10 @@ export default function RoomsScreen({ navigation }) {
                         {loading ? (
                                 <ActivityIndicator size="large" />
                         ) : (
-                                <FlatList
-                                        data={rooms}
-                                        keyExtractor={(item) => item._id}
-                                        renderItem={renderItem}
-                                />
+                                <FlatList data={rooms} keyExtractor={(item) => item._id} renderItem={renderItem} />
                         )}
                 </View>
         );
 }
+
+export default RoomsScreen;
