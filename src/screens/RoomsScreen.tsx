@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { getRooms } from '../services/roomService';
-import auth from '../services/authService';
+import { AuthContext } from '../context/AuthContext';
 
 function RoomsScreen({ navigation }) {
         const [rooms, setRooms] = useState([]);
         const [loading, setLoading] = useState(true);
+        const { token, user } = useContext(AuthContext);
 
         useEffect(() => {
                 const fetchRooms = async () => {
+                        console.log('TOKEN:', token); // 👈 Check if token exists
+                        if (!token) return;
                         try {
-                                const token = await auth.getToken();
                                 const data = await getRooms(token);
+                                console.log('ROOMS:', data); // 👈 Confirm what’s coming back
                                 setRooms(data);
                         } catch (err) {
                                 console.error('Error fetching rooms', err);
@@ -20,9 +23,10 @@ function RoomsScreen({ navigation }) {
                         }
                 };
                 fetchRooms();
-        }, []);
+        }, [token]);
 
-        const renderItem = ({ item }) => (
+
+        const renderItem = ({ item }: any) => (
                 <TouchableOpacity
                         onPress={() => navigation.navigate('Booking', { room: item })}
                         style={{
@@ -40,13 +44,14 @@ function RoomsScreen({ navigation }) {
 
         return (
                 <View style={{ padding: 16 }}>
+                        <Text style={{ fontSize: 24, fontWeight: '600', marginBottom: 16 }}>
+                                Welcome{user?.name ? `, ${user.name}` : ''} 👋
+                        </Text>
+
                         {loading ? (
                                 <ActivityIndicator size="large" />
                         ) : (
-                                <FlatList data={rooms} keyExtractor={(item) => item._id} renderItem={renderItem} />
-                        )}
-                </View>
-        );
-}
-
-export default RoomsScreen;
+                                <FlatList
+                                        data={rooms}
+                                        keyExtractor={(item) => item._id}
+                 

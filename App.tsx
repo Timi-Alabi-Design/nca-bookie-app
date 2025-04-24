@@ -2,7 +2,9 @@ import { registerRootComponent } from 'expo';
 import React from 'react';
 import AppNavigator from './src/navigation/AppNavigator';
 import * as Font from 'expo-font';
-import AppLoading from 'expo-app-loading'; // if not installed: npm i expo-app-loading
+import AppLoading from 'expo-app-loading';
+import { AuthProvider } from "./src/context/AuthContext"
+
 
 const loadFonts = () => {
         return Font.loadAsync({
@@ -24,7 +26,12 @@ function App() {
                 );
         }
 
-        return <AppNavigator />;
+        return (
+                <AuthProvider>
+                        <AppNavigator />;
+                </AuthProvider>
+
+        )
 }
 
 export default registerRootComponent(App);

@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import auth from '../services/authService';
 import styles from '../styles/globalStyles';
+import { AuthContext } from '../context/AuthContext';
 
 function LoginScreen({ navigation }) {
         const [form, setForm] = useState({ email: '', password: '' });
         const [errors, setErrors] = useState({ email: '', password: '' });
+        const { login } = useContext(AuthContext);
 
-        const handleChange = (key, value) => {
+        const handleChange = (key: string, value: string) => {
                 setForm((prev) => ({ ...prev, [key]: value }));
                 setErrors((prev) => ({ ...prev, [key]: '' }));
         };
@@ -23,10 +25,10 @@ function LoginScreen({ navigation }) {
 
                         const res = await auth.loginUser(form);
 
-                        if (res.token) {
-                                await auth.storeToken(res.token);
+                        if (res.token && res.user) {
+                                login(res.token, res.user);
                                 Alert.alert('Login successful');
-                                navigation.navigate('Rooms');
+                                // No manual navigation needed if AppNavigator renders the drawer after login
                         } else {
                                 Alert.alert('Login failed', res.message || 'Invalid credentials');
                         }

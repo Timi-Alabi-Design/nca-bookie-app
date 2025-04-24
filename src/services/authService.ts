@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'http://192.168.1.166:9000/api'; // ✅ your local IP
+const API_URL = 'http://192.168.1.166:9000/api';
 
-const registerUser = async (data) => {
+const registerUser = async (data: any) => {
         const res = await fetch(`${API_URL}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -11,7 +11,7 @@ const registerUser = async (data) => {
         return res.json();
 };
 
-const loginUser = async (data) => {
+const loginUser = async (data: any) => {
         const res = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -20,7 +20,7 @@ const loginUser = async (data) => {
         return res.json();
 };
 
-const storeToken = async (token) => {
+const storeToken = async (token: string) => {
         try {
                 await AsyncStorage.setItem('nca_token', token);
         } catch (err) {
