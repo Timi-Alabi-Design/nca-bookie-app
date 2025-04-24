@@ -11,7 +11,7 @@ import MyBookingsScreen from '../screens/MyBookingsScreen';
 
 const Drawer = createDrawerNavigator();
 
-export default function DrawerNavigator() {
+function DrawerNavigator() {
         const { logout, user } = useContext(AuthContext);
 
         return (
@@ -33,3 +33,4 @@ export default function DrawerNavigator() {
                 </Drawer.Navigator>
         );
 }
+export default DrawerNavigator

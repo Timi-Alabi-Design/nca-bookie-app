@@ -39,7 +39,7 @@ function LoginScreen({ navigation }) {
         };
 
         return (
-                <View style={styles.container}>
+                <View style={styles.midContainer}>
                         <Text style={styles.title}>Login to NCA Bookie</Text>
 
                         <Text>Email Address</Text>

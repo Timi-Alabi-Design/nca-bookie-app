@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
+import { View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import auth from '../services/authService';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import DropDownPicker from 'react-native-dropdown-picker';
-
+import auth from '../services/authService';
+import styles from '../styles/globalStyles';
 
 function BookingScreen({ route, navigation }) {
         const { room } = route.params;
@@ -12,17 +11,35 @@ function BookingScreen({ route, navigation }) {
         const [showPicker, setShowPicker] = useState(false);
         const [purpose, setPurpose] = useState('');
         const [token, setToken] = useState('');
-        const [dropdownOpen, setDropdownOpen] = useState(false);
-        const [timeSlot, setTimeSlot] = useState(null);
-        const [dropdownItems, setDropdownItems] = useState([
-                { label: '8:00 AM – 10:00 AM', value: '8:00 AM – 10:00 AM' },
-                { label: '10:00 AM – 12:00 PM', value: '10:00 AM – 12:00 PM' },
-                { label: '12:00 PM – 2:00 PM', value: '12:00 PM – 2:00 PM' },
-                { label: '2:00 PM – 4:00 PM', value: '2:00 PM – 4:00 PM' },
-                { label: '4:00 PM – 6:00 PM', value: '4:00 PM – 6:00 PM' },
-                { label: '6:00 PM – 8:00 PM', value: '6:00 PM – 8:00 PM' },
-        ]);
+        const [startTime, setStartTime] = useState(null);
+        const [endTime, setEndTime] = useState(null);
+        const [startOpen, setStartOpen] = useState(false);
+        const [endOpen, setEndOpen] = useState(false);
 
+        const [department, setDepartment] = useState(null);
+        const [departmentOpen, setDepartmentOpen] = useState(false);
+        const departmentOptions = [
+                { label: 'Music Ministry', value: 'music' },
+                { label: 'Technical', value: 'technical' },
+                { label: 'Media', value: 'media' },
+                { label: 'Welfare', value: 'welfare' },
+                { label: 'Youth', value: 'youth' },
+                { label: 'Hospitality', value: 'hospitality' },
+                { label: 'Children Ministry', value: 'children' },
+                { label: 'Others', value: 'others' },
+        ];
+
+        const timeOptions = Array.from({ length: 24 }, (_, i) => {
+                const hour = i % 24;
+                const date = new Date(0, 0, 0, hour);
+                const label = date.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        hour12: true,
+                });
+
+                const value = hour.toString().padStart(2, '0') + ':00';
+                return { label, value };
+        });
 
         useEffect(() => {
                 const loadToken = async () => {
@@ -33,6 +50,13 @@ function BookingScreen({ route, navigation }) {
         }, []);
 
         const handleBooking = async () => {
+                if (!startTime || !endTime || !department) {
+                        Alert.alert('Missing Info', 'Please fill out all fields.');
+                        return;
+                }
+
+                const timeSlot = `${startTime} – ${endTime}`;
+
                 try {
                         const res = await fetch('http://192.168.1.166:9000/api/bookings', {
                                 method: 'POST',
@@ -45,6 +69,7 @@ function BookingScreen({ route, navigation }) {
                                         date: date.toISOString().split('T')[0],
                                         timeSlot,
                                         purpose,
+                                        department,
                                 }),
                         });
 
@@ -61,25 +86,14 @@ function BookingScreen({ route, navigation }) {
                 }
         };
 
-
         return (
-                <View style={{ padding: 20 }}>
-                        <Text style={{ fontSize: 20, marginBottom: 10 }}>Booking for: {room?.name || 'N/A'}</Text>
+                <View style={styles.container}>
+                        <Text style={styles.title}>Booking for: {room?.name || 'N/A'}</Text>
 
                         <Text>Date</Text>
-                        <TouchableOpacity
-                                onPress={() => setShowPicker(true)}
-                                style={{
-                                        borderWidth: 1,
-                                        borderColor: '#ccc',
-                                        padding: 12,
-                                        borderRadius: 6,
-                                        marginBottom: 12,
-                                }}
-                        >
+                        <TouchableOpacity onPress={() => setShowPicker(true)} style={styles.input}>
                                 <Text>{date.toDateString()}</Text>
                         </TouchableOpacity>
-
 
                         {showPicker && typeof DateTimePicker !== 'undefined' && (
                                 <DateTimePicker
@@ -93,51 +107,65 @@ function BookingScreen({ route, navigation }) {
                                 />
                         )}
 
-                        <Text style={{ marginTop: 16 }}>Time Slot</Text>
-                        <View
-                                style={{
-                                        borderWidth: 1,
-                                        borderColor: '#ccc',
-                                        borderRadius: 6,
-                                        marginVertical: 8,
-                                        height: 48, // ✅ tighter height
-                                        justifyContent: 'center',
-                                        paddingHorizontal: 8,
-                                        zIndex: 1
-                                }}
-                        >
+                        {/* START TIME */}
+                        <View style={{ zIndex: 1000 }}>
+                                <Text style={{ marginTop: 16 }}>From</Text>
                                 <DropDownPicker
-                                        open={dropdownOpen}
-                                        value={timeSlot}
-                                        items={[
-                                                { label: '8:00 AM – 10:00 AM', value: '8:00 AM – 10:00 AM' },
-                                                { label: '10:00 AM – 12:00 PM', value: '10:00 AM – 12:00 PM' },
-                                                { label: '12:00 PM – 2:00 PM', value: '12:00 PM – 2:00 PM' },
-                                                { label: '2:00 PM – 4:00 PM', value: '2:00 PM – 4:00 PM' },
-                                                { label: '4:00 PM – 6:00 PM', value: '4:00 PM – 6:00 PM' },
-                                                { label: '6:00 PM – 8:00 PM', value: '6:00 PM – 8:00 PM' },
-                                        ]}
-                                        setOpen={setDropdownOpen}
-                                        setValue={setTimeSlot}
-                                        setItems={setDropdownItems}
-                                        placeholder="Select a time slot"
-                                        style={{ marginBottom: 16 }}
-                                        dropDownContainerStyle={{ zIndex: 9999 }}
+                                        open={startOpen}
+                                        value={startTime}
+                                        items={timeOptions}
+                                        setOpen={setStartOpen}
+                                        setValue={setStartTime}
+                                        setItems={() => { }}
+                                        placeholder="Select start time"
+                                        style={styles.input}
+                                        dropDownContainerStyle={{ zIndex: 1000 }}
                                 />
-
                         </View>
 
+                        {/* END TIME */}
+                        <View style={{ zIndex: 900 }}>
+                                <Text style={{ marginTop: 16 }}>To</Text>
+                                <DropDownPicker
+                                        open={endOpen}
+                                        value={endTime}
+                                        items={timeOptions}
+                                        setOpen={setEndOpen}
+                                        setValue={setEndTime}
+                                        setItems={() => { }}
+                                        placeholder="Select end time"
+                                        style={styles.input}
+                                        dropDownContainerStyle={{ zIndex: 900 }}
+                                />
+                        </View>
 
+                        {/* DEPARTMENT */}
+                        <View style={{ zIndex: 800 }}>
+                                <Text style={{ marginTop: 16 }}>Department</Text>
+                                <DropDownPicker
+                                        open={departmentOpen}
+                                        value={department}
+                                        items={departmentOptions}
+                                        setOpen={setDepartmentOpen}
+                                        setValue={setDepartment}
+                                        setItems={() => { }}
+                                        placeholder="Select your department"
+                                        style={styles.input}
+                                        dropDownContainerStyle={{ zIndex: 800 }}
+                                />
+                        </View>
 
-                        <Text>Purpose</Text>
+                        <Text style={{ marginTop: 16 }}>Purpose</Text>
                         <TextInput
                                 placeholder="Why are you booking?"
                                 value={purpose}
                                 onChangeText={setPurpose}
-                                style={{ borderWidth: 1, padding: 8, marginVertical: 8 }}
+                                style={styles.input}
                         />
 
-                        <Button title="Book Now" onPress={handleBooking} />
+                        <TouchableOpacity style={styles.button} onPress={handleBooking}>
+                                <Text style={styles.buttonText}>Book Now</Text>
+                        </TouchableOpacity>
                 </View>
         );
 }

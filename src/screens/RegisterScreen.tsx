@@ -44,7 +44,7 @@ function RegisterScreen({ navigation }) {
         };
 
         return (
-                <View style={styles.container}>
+                <View style={styles.midContainer}>
                         <Text style={styles.title}>Create an Account</Text>
 
                         <Text>Full Name</Text>

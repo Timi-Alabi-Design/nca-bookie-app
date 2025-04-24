@@ -4,7 +4,14 @@ import { StyleSheet } from 'react-native';
 import theme from './theme';
 
 export default StyleSheet.create({
+        
         container: {
+                flex: 1,
+                backgroundColor: theme.colors.background,
+                padding: theme.spacing.lg,
+                // justifyContent: 'center',
+        },
+        midContainer: {
                 flex: 1,
                 backgroundColor: theme.colors.background,
                 padding: theme.spacing.lg,

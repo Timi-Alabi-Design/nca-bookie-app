@@ -4,7 +4,7 @@ import AuthStack from './AuthStack';
 import DrawerNavigator from './DrawerNavigator';
 import { AuthContext } from '../context/AuthContext';
 
-export default function AppNavigator() {
+function AppNavigator() {
         const { token, loading } = useContext(AuthContext);
 
         if (loading) return null;
@@ -15,3 +15,5 @@ export default function AppNavigator() {
                 </NavigationContainer>
         );
 }
+
+export default AppNavigator

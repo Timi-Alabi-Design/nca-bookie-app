@@ -4,7 +4,7 @@ import authService from '../services/authService';
 type User = {
         name: string;
         email: string;
-        // add more fields if needed
+        role: string;
 };
 
 interface AuthContextProps {
@@ -34,7 +34,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
                         // optional: fetch user profile with token
                         if (storedToken) {
                                 setToken(storedToken);
-                                setUser({ name: 'User', email: 'default@email.com' }); // replace with real user
+                                setUser(null); // replace with real user
                         }
                         setLoading(false);
                 };
